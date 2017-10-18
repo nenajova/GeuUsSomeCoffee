@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Get Us Some Coffee</title>
+</head>
+<body>
+
+
+	<script>
+
+		function positionReceived(position) {
+			// console.log('position received, get lat and lng');
+			latLng = position.coords.latitude + ',' + position.coords.longitude;
+			console.log(latLng)
+		}
+
+		function positionNotReceived() {
+			// console.log('position block, ask user again to allow');
+			alert('For using this app it is necessary to allow position');
+			location.reload();
+		}
+
+
+		if (navigator.geolocation) 
+			navigator.geolocation.getCurrentPosition(positionReceived, positionNotReceived);
+		
+	</script>
+</body>
+</html>
