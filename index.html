@@ -3,24 +3,63 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Get Us Some Coffee</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
 </head>
 <body>
-
+	<div class="container">
+		<div id="venues"></div>
+	</div>
 
 	<script>
+
+		var res;
+
+		function drawTable(r) {
+			var venues = r.response.groups[0].items;
+			var venuesTable = `
+				<table>
+					<tr>
+						<th>Name</th>
+						<th>Picture</th>
+						<th>Distance</th>
+					</tr>
+			`;
+			for (i=0; i<venues.length; i++) {
+				console.log(venues[i])
+				photo = "";
+				if (venues[i].tips !== undefined && venues[i].tips[0].photo !== undefined) {
+					photo = "<img src='" + venues[i].tips[0].photo.prefix + "50x50" + venues[i].tips[0].photo.suffix + "'>"
+				}
+				venuesTable += "<tr><td>" + venues[i].venue.name + "</td><td>" + photo + "</td><td>" + venues[i].venue.location.distance + "</td></tr>";
+			}
+			venuesTable += "</table>"
+			document.getElementById('venues').innerHTML = venuesTable;
+		}
+
+		function loadVenues (latLng) {
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					res = JSON.parse(this.responseText);
+					console.log(res)
+					drawTable(res);
+				}
+			};
+			xhttp.open("GET", "https://api.foursquare.com/v2/venues/explore?&query=coffee&ll=" + latLng + "&radius=1000&client_id=IIEW50PG2EKZCPEQ3SM3CQ2DQLMLD1U5LZ2VU0PSZBCITOP0&client_secret=DHRHI0KZ1Z112KYSBVN4KJBCYSP4NRFNFRE4ZAY1LAIAUSVW&v=20171018", true);
+			xhttp.send();			
+		}
 
 		function positionReceived(position) {
 			// console.log('position received, get lat and lng');
 			latLng = position.coords.latitude + ',' + position.coords.longitude;
-			console.log(latLng)
+			loadVenues(latLng)
 		}
 
 		function positionNotReceived() {
 			// console.log('position block, ask user again to allow');
-			alert('For using this app it is necessary to allow position');
+			alert('For using this app it is necessary to allow your position');
 			location.reload();
 		}
-
 
 		if (navigator.geolocation) 
 			navigator.geolocation.getCurrentPosition(positionReceived, positionNotReceived);
