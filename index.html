@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Get Us Some Coffee</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
 </head>
@@ -16,8 +17,14 @@
 
 		function drawTable(r) {
 			var venues = r.response.groups[0].items;
+
+			// default sort of distance
+			venues.sort(function(a, b) {
+				return a.venue.location.distance - b.venue.location.distance;
+			});
+
 			var venuesTable = `
-				<table>
+				<table class="table">
 					<tr>
 						<th>Name</th>
 						<th>Picture</th>
@@ -25,12 +32,12 @@
 					</tr>
 			`;
 			for (i=0; i<venues.length; i++) {
-				console.log(venues[i])
 				photo = "";
 				if (venues[i].tips !== undefined && venues[i].tips[0].photo !== undefined) {
-					photo = "<img src='" + venues[i].tips[0].photo.prefix + "50x50" + venues[i].tips[0].photo.suffix + "'>"
+					photo = "<img src='" + venues[i].tips[0].photo.prefix + "36x36" + venues[i].tips[0].photo.suffix + "'>"
 				}
-				venuesTable += "<tr><td>" + venues[i].venue.name + "</td><td>" + photo + "</td><td>" + venues[i].venue.location.distance + "</td></tr>";
+
+				venuesTable += "<tr><td><a href='venue.html?id=" + venues[i].venue.id + "'>" + venues[i].venue.name + "</a></td><td>" + photo + "</td><td>" + venues[i].venue.location.distance + "</td></tr>";
 			}
 			venuesTable += "</table>"
 			document.getElementById('venues').innerHTML = venuesTable;
